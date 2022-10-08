@@ -1,0 +1,49 @@
+from pyzabbix import ZabbixAPI
+import csv
+from progressbar import ProgressBar, Percentage, ETA, ReverseBar, RotatingMarker, Timer
+
+zapi = ZabbixAPI(" http://46.148.192.41/zabbix")
+zapi.login(user="shatilovis", password="ZAQ12wsx")
+
+arq = csv.reader(open('D:\hosts2.csv'))
+
+lines = sum(1 for line in arq)
+
+f = csv.reader(open('D:\hosts2.csv'), delimiter=';')
+bar = ProgressBar(maxval=lines,widgets=[Percentage(), ReverseBar(), ETA(), RotatingMarker(), Timer()]).start()
+i = 0
+
+for [A,B,C,D,E,F,G,H] in f:
+    hostcreate = zapi.host.create(
+        host= A,
+        name= G,
+        description= E,
+        status= 0,
+        interfaces=[{
+            "type": 1,
+            "main": "1",
+            "useip": 1,
+            "ip": A,
+            "dns": "",
+            "port": 10050
+        }],
+        groups=[{
+            "groupid": 67
+        },
+        {        
+            "groupid": 134 
+        },
+        {        
+            "groupid": 133  
+        }],
+        templates=[{
+            "templateid": 10311
+        }]
+    )
+
+
+    i += 1
+    bar.update(i)
+
+bar.finish
+print (" ")
